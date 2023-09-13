@@ -10,12 +10,19 @@ from django.conf import settings
 from django.db import models
 from django.utils.module_loading import import_string
 
+from django.utils.translation import gettext_lazy as _
+
 
 @six.python_2_unicode_compatible
-class SentNotification(models.Model):
+class AbstractSentNotification(models.Model):
     """
     Stores info on the notification that was sent.
     """
+
+    class Meta:
+        verbose_name = _("sentnotification")
+        verbose_name_plural = _("sentnotifications")
+        abstract = True
 
     STATUS_PENDING = 0
     STATUS_SUCCESS = 1
@@ -74,6 +81,10 @@ class SentNotification(models.Model):
             return jsonpickle.loads(self.attachments)
         else:
             return None
+
+
+class SentNotification(AbstractSentNotification):
+    pass
 
 
 @six.python_2_unicode_compatible

@@ -3,7 +3,15 @@ import datetime
 from django.utils import timezone
 from django.core.management.base import BaseCommand
 
-from ...models import SentNotification
+from django.apps import apps
+
+try:
+    setting_value = settings.HERALD_CUSTOM_SENTNOTIFICATION_MODEL
+    app_label, model_name = setting_value.split(".")
+    SentNotification = apps.get_model(app_label, model_name)
+except Exception as ex:
+    # Handle error (e.g., set MyModel to a default value or raise a more descriptive error)
+    from ...models import SentNotification
 
 
 def valid_date(s):

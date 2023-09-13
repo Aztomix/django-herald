@@ -17,8 +17,15 @@ from django.template import TemplateDoesNotExist
 from django.template.loader import render_to_string
 from django.utils import timezone
 from django.core.files import File
+from django.apps import apps
 
-from .models import SentNotification
+try:
+    setting_value = settings.HERALD_CUSTOM_SENTNOTIFICATION_MODEL
+    app_label, model_name = setting_value.split(".")
+    SentNotification = apps.get_model(app_label, model_name)
+except Exception as ex:
+    # Handle error (e.g., set MyModel to a default value or raise a more descriptive error)
+    from .models import SentNotification
 
 
 class NotificationBase(object):
@@ -58,7 +65,7 @@ class NotificationBase(object):
     def get_class_path(cls):
         return "{}.{}".format(cls.__module__, cls.__name__)
 
-    def send(self, raise_exception=False, user=None):
+    def send(self, raise_exception=False, user=None, **kwargs):
         """
         Handles the preparing the notification for sending. Called to trigger the send from code.
         If raise_exception is True, it will raise any exceptions rather than simply logging them.
@@ -92,6 +99,7 @@ class NotificationBase(object):
             notification_class=self.get_class_path(),
             attachments=self._get_encoded_attachments(),
             user=user,
+            **kwargs
         )
 
         return self.resend(sent_notification, raise_exception=raise_exception)
@@ -372,7 +380,6 @@ class EmailNotification(NotificationBase):
         extra_data=None,
         attachments=None,
     ):
-
         extra_data = extra_data or {}
 
         mail = EmailMultiAlternatives(
