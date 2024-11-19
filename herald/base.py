@@ -18,14 +18,25 @@ from django.template.loader import render_to_string
 from django.utils import timezone
 from django.core.files import File
 from django.apps import apps
+from .models import SentNotification as DefaultSentNotification
 
-try:
-    setting_value = settings.HERALD_CUSTOM_SENTNOTIFICATION_MODEL
-    app_label, model_name = setting_value.split(".")
-    SentNotification = apps.get_model(app_label, model_name)
-except Exception as ex:
-    # Handle error (e.g., set MyModel to a default value or raise a more descriptive error)
-    from .models import SentNotification
+class LazySentNotification:
+    _sent_notification = None
+
+    @property
+    def SentNotification(self):
+        if self._sent_notification is None:
+            try:
+                setting_value = settings.HERALD_CUSTOM_SENTNOTIFICATION_MODEL
+                app_label, model_name = setting_value.split(".")
+                self._sent_notification = apps.get_model(app_label, model_name)
+            except Exception as ex:
+                # Handle error (e.g., set MyModel to a default value or raise a more descriptive error)
+                self._sent_notification = DefaultSentNotification
+        return self._sent_notification
+    
+lazy_loader = LazySentNotification()
+
 
 
 class NotificationBase(object):
@@ -89,6 +100,7 @@ class NotificationBase(object):
         subject = self.get_subject()
         extra_data = self.get_extra_data()
 
+        SentNotification = lazy_loader.SentNotification
         sent_notification = SentNotification(
             recipients=",".join(recipients),
             text_content=text_content,
