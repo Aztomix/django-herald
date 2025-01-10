@@ -3,24 +3,7 @@ import datetime
 from django.utils import timezone
 from django.core.management.base import BaseCommand
 
-from django.apps import apps
-
-class LazySentNotification:
-    _sent_notification = None
-
-    @property
-    def SentNotification(self):
-        if self._sent_notification is None:
-            try:
-                setting_value = settings.HERALD_CUSTOM_SENTNOTIFICATION_MODEL
-                app_label, model_name = setting_value.split(".")
-                self._sent_notification = apps.get_model(app_label, model_name)
-            except Exception as ex:
-                # Handle error (e.g., set MyModel to a default value or raise a more descriptive error)
-                self._sent_notification = DefaultSentNotification
-        return self._sent_notification
-    
-lazy_loader = LazySentNotification()
+from herald.base import lazy_loader
 
 def valid_date(s):
     return datetime.datetime.strptime(s, "%Y-%m-%d")

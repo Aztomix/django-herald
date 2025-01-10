@@ -17,8 +17,10 @@ from django.template import TemplateDoesNotExist
 from django.template.loader import render_to_string
 from django.utils import timezone
 from django.core.files import File
-from django.apps import apps
+
 from .models import SentNotification as DefaultSentNotification
+
+logger = logging.getLogger(__name__)
 
 class LazySentNotification:
     _sent_notification = None
@@ -27,14 +29,16 @@ class LazySentNotification:
     def SentNotification(self):
         if self._sent_notification is None:
             try:
+                from django.apps import apps
                 setting_value = settings.HERALD_CUSTOM_SENTNOTIFICATION_MODEL
                 app_label, model_name = setting_value.split(".")
                 self._sent_notification = apps.get_model(app_label, model_name)
             except Exception as ex:
                 # Handle error (e.g., set MyModel to a default value or raise a more descriptive error)
+                logger.error("herald.base failed to load HERALD_CUSTOM_SENTNOTIFICATION_MODEL", exc_info=True)
                 self._sent_notification = DefaultSentNotification
         return self._sent_notification
-    
+
 lazy_loader = LazySentNotification()
 
 
