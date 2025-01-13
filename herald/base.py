@@ -3,6 +3,7 @@ Base notification classes
 """
 
 import json
+import logging
 from email.mime.base import MIMEBase
 from mimetypes import guess_type
 
