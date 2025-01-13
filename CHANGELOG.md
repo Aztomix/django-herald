@@ -1,5 +1,7 @@
 ## TBD (TBD)
 
+## 0.3.1 (13-01-2025)
+- Allow a custom model overwrite for SentNotification
 
 ## 0.3.0 (10-18-2022)
 - Added support for automatic HTML2text support for plain text emails
