@@ -31,7 +31,7 @@ html2text_requires = [
 ]
 
 setup(
-    name="django-herald",
+    name="django-herald-aztomix-custom",
     version=VERSION,
     author="Worthwhile",
     author_email="devs@worthwhile.com",
@@ -44,8 +44,8 @@ setup(
     packages=find_packages(include=("herald", "herald.*")),
     include_package_data=True,  # declarations in MANIFEST.in
     license="MIT",
-    url="https://github.com/worthwhile/django-herald/",
-    download_url="https://github.com/worthwhile/django-herald/tarball/" + VERSION,
+    url="https://github.com/aztomix/django-herald/",
+    download_url="https://github.com/aztomix/django-herald/tarball/" + VERSION,
     description="Django library for separating the message content from transmission method",
     long_description=read_file("README.md"),
     long_description_content_type="text/markdown",
